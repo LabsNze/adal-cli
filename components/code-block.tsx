@@ -96,7 +96,7 @@ export function CodeBlock({ code, language }: CodeBlockProps) {
           <span className="sr-only">{copied ? "Copied to clipboard" : "Copy code"}</span>
         </Button>
       </div>
-      <div className="overflow-x-auto -webkit-overflow-scrolling-touch">
+      <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: "touch" }}>
         <pre className="p-3 text-[13px] leading-relaxed">
           <code className="font-mono text-foreground/90">{code}</code>
         </pre>

@@ -98,7 +98,7 @@ export default function Home() {
       <header className="flex items-center justify-between border-b border-border px-3 py-2.5 md:px-4 md:py-3 bg-card/60 backdrop-blur-md shrink-0">
         <div className="flex items-center gap-2.5">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shrink-0">
-            <Terminal className="h-4.5 w-4.5" />
+            <Terminal className="h-5 w-5" />
           </div>
           <div className="min-w-0">
             <h1 className="text-sm font-semibold text-foreground leading-none font-mono truncate">
@@ -327,7 +327,7 @@ export default function Home() {
               onClick={() => setShowSidebar(false)}
               role="presentation"
             />
-            <aside className="fixed inset-y-0 right-0 w-full max-w-[340px] flex flex-col z-40 bg-background border-l border-border md:hidden animate-in slide-in-from-right duration-200">
+            <aside className="fixed inset-y-0 right-0 w-full max-w-[340px] flex flex-col z-40 bg-background border-l border-border md:hidden animate-in slide-in-from-right">
               <div className="flex items-center justify-between px-3 py-2.5 border-b border-border shrink-0">
                 <span className="text-sm font-semibold text-foreground">Settings</span>
                 <Button

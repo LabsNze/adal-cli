@@ -696,13 +696,21 @@ This ensures thorough analysis and robust implementation.`,
 }
 
 export async function POST(req: Request) {
-  const body = await req.json()
-  const { messages, algorithm, temperature } = body
+  try {
+    const body = await req.json()
+    const { messages, algorithm, temperature } = body
 
-  const selectedAlgorithm = algorithm && algorithmInstructions[algorithm] ? algorithm : "cot"
-  const selectedTemp = typeof temperature === "number" ? Math.min(1, Math.max(0, temperature)) : 0.7
+    if (!messages || !Array.isArray(messages)) {
+      return new Response(JSON.stringify({ error: "Messages array is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      })
+    }
 
-  const result = streamText({
+    const selectedAlgorithm = algorithm && algorithmInstructions[algorithm] ? algorithm : "cot"
+    const selectedTemp = typeof temperature === "number" ? Math.min(1, Math.max(0, temperature)) : 0.7
+
+    const result = streamText({
     model: "anthropic/claude-sonnet-4-20250514",
     system: `You are AdaL -- an elite AI Code Assistant that combines an autonomous AI agent with a precise code assistant. You generate solid, robust, production-ready code.
 
@@ -759,5 +767,12 @@ When a user asks for debugging help, ALWAYS use augmentDebug for its personalize
     temperature: selectedTemp,
   })
 
-  return result.toUIMessageStreamResponse()
+    return result.toUIMessageStreamResponse()
+  } catch (error) {
+    console.error("[v0] Chat API error:", error)
+    return new Response(
+      JSON.stringify({ error: "An error occurred processing your request" }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    )
+  }
 }
