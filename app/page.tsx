@@ -21,7 +21,9 @@ import {
   X,
   PanelRightClose,
   PanelRightOpen,
+  Search,
 } from "lucide-react"
+import { CodebaseSearch } from "@/components/codebase-search"
 
 export default function Home() {
   const [algorithm, setAlgorithm] = useState("cot")
@@ -170,6 +172,7 @@ export default function Home() {
                 <div className="flex flex-wrap justify-center gap-2">
                   {[
                     "Multi-algorithm reasoning",
+                    "Sourcegraph Cody search",
                     "Code generation",
                     "Security review",
                     "Test generation",
@@ -259,14 +262,21 @@ export default function Home() {
         {/* Sidebar - Desktop */}
         {desktopSidebar && (
           <aside className="hidden md:flex flex-col w-80 lg:w-96 border-l border-border bg-card/30 shrink-0">
-            <Tabs defaultValue="controls" className="flex flex-col flex-1 overflow-hidden">
-              <TabsList className="grid w-full grid-cols-2 bg-transparent rounded-none border-b border-border h-auto p-0">
+            <Tabs defaultValue="cody" className="flex flex-col flex-1 overflow-hidden">
+              <TabsList className="grid w-full grid-cols-3 bg-transparent rounded-none border-b border-border h-auto p-0">
                 <TabsTrigger
                   value="controls"
                   className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 text-xs gap-1.5"
                 >
                   <Settings className="h-3.5 w-3.5" />
                   Controls
+                </TabsTrigger>
+                <TabsTrigger
+                  value="cody"
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 text-xs gap-1.5"
+                >
+                  <Search className="h-3.5 w-3.5" />
+                  Cody
                 </TabsTrigger>
                 <TabsTrigger
                   value="trace"
@@ -283,6 +293,14 @@ export default function Home() {
                   temperature={temperature}
                   setTemperature={setTemperature}
                   isStreaming={isStreaming}
+                />
+              </TabsContent>
+              <TabsContent value="cody" className="flex-1 overflow-auto p-4 mt-0">
+                <CodebaseSearch
+                  onSearch={(prompt) => handleSubmit(prompt)}
+                  onInsight={(prompt) => handleSubmit(prompt)}
+                  isStreaming={isStreaming}
+                  messages={messages}
                 />
               </TabsContent>
               <TabsContent value="trace" className="flex-1 overflow-auto p-4 mt-0">
@@ -316,14 +334,21 @@ export default function Home() {
                 </Button>
               </div>
 
-              <Tabs defaultValue="controls" className="flex flex-col flex-1 overflow-hidden">
-                <TabsList className="grid w-full grid-cols-2 bg-transparent rounded-none border-b border-border h-auto p-0">
+              <Tabs defaultValue="cody" className="flex flex-col flex-1 overflow-hidden">
+                <TabsList className="grid w-full grid-cols-3 bg-transparent rounded-none border-b border-border h-auto p-0">
                   <TabsTrigger
                     value="controls"
                     className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 text-xs gap-1.5"
                   >
                     <Settings className="h-3.5 w-3.5" />
                     Controls
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="cody"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 text-xs gap-1.5"
+                  >
+                    <Search className="h-3.5 w-3.5" />
+                    Cody
                   </TabsTrigger>
                   <TabsTrigger
                     value="trace"
@@ -340,6 +365,20 @@ export default function Home() {
                     temperature={temperature}
                     setTemperature={setTemperature}
                     isStreaming={isStreaming}
+                  />
+                </TabsContent>
+                <TabsContent value="cody" className="flex-1 overflow-auto p-4 mt-0">
+                  <CodebaseSearch
+                    onSearch={(prompt) => {
+                      handleSubmit(prompt)
+                      setShowSidebar(false)
+                    }}
+                    onInsight={(prompt) => {
+                      handleSubmit(prompt)
+                      setShowSidebar(false)
+                    }}
+                    isStreaming={isStreaming}
+                    messages={messages}
                   />
                 </TabsContent>
                 <TabsContent value="trace" className="flex-1 overflow-auto p-4 mt-0">

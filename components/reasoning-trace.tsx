@@ -44,6 +44,8 @@ const toolLabels: Record<string, string> = {
   reviewCode: "Review Code",
   expandCodeSnippet: "Expand Code",
   generateTests: "Generate Tests",
+  codebaseSearch: "Cody: Code Search",
+  codebaseInsights: "Cody: Insights",
 }
 
 export function ReasoningTrace({ messages, algorithm }: ReasoningTraceProps) {

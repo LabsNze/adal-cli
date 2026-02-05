@@ -21,6 +21,7 @@ import {
   Code,
   Bug,
   FlaskConical,
+  Search,
 } from "lucide-react"
 
 interface AgentControlsProps {
@@ -179,6 +180,7 @@ export function AgentControls({
             { icon: Shield, label: "Security review and auditing", color: "text-emerald-400" },
             { icon: Brain, label: "Multi-algorithm reasoning", color: "text-cyan-400" },
             { icon: FlaskConical, label: "Test case generation", color: "text-amber-400" },
+            { icon: Search, label: "Cody codebase search & insights", color: "text-primary" },
             { icon: Sparkles, label: "Design pattern guidance", color: "text-pink-400" },
           ].map((cap) => {
             const CapIcon = cap.icon

@@ -117,6 +117,8 @@ const toolDisplayNames: Record<string, string> = {
   reviewCode: "Reviewing Code",
   expandCodeSnippet: "Expanding Code",
   generateTests: "Generating Tests",
+  codebaseSearch: "Cody: Searching Codebase",
+  codebaseInsights: "Cody: Analyzing Codebase",
 }
 
 interface MessageItemProps {

@@ -1,6 +1,6 @@
 "use client"
 
-import { Code, FileCode, Bug, Lightbulb, Layers, Shield } from "lucide-react"
+import { Code, FileCode, Bug, Lightbulb, Layers, Shield, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface QuickActionsProps {
@@ -50,6 +50,13 @@ const actions = [
     description: "TypeScript patterns",
     prompt:
       "Implement the Observer design pattern in TypeScript with a practical example for a real-time notification system. Include proper type safety, error handling, and usage examples.",
+  },
+  {
+    icon: Search,
+    label: "Codebase Search",
+    description: "Cody-powered insights",
+    prompt:
+      "Search my codebase and provide a comprehensive health report. Analyze the architecture, identify code quality issues, find dead code, and suggest the top 5 improvements I should prioritize.",
   },
 ]
 

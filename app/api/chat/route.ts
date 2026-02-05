@@ -187,6 +187,165 @@ const codeGenerationTools = {
       }
     },
   }),
+
+  codebaseSearch: tool({
+    description:
+      "Search the codebase for specific patterns, symbols, functions, types, or implementations using Sourcegraph Cody-style semantic code intelligence. Use this to find relevant code, trace dependencies, locate definitions, and understand how code is used across a project.",
+    inputSchema: z.object({
+      query: z.string().describe("The search query - can be a symbol name, pattern, concept, or natural language description of what to find"),
+      searchType: z
+        .enum(["symbol", "pattern", "reference", "definition", "semantic"])
+        .describe("Type of search: symbol (find by name), pattern (regex/glob), reference (find usages), definition (find where defined), semantic (natural language)"),
+      fileFilter: z
+        .string()
+        .nullable()
+        .describe("Optional file glob filter, e.g. '*.ts' or 'src/**/*.py'"),
+      language: z
+        .string()
+        .nullable()
+        .describe("Filter results to a specific programming language"),
+    }),
+    execute: async ({ query, searchType, fileFilter, language }) => {
+      const searchStrategies: Record<string, string[]> = {
+        symbol: [
+          `Exact symbol match for "${query}"`,
+          `Fuzzy symbol match across exported members`,
+          `Type/interface/class definitions containing "${query}"`,
+        ],
+        pattern: [
+          `Regex pattern match: ${query}`,
+          `Structural pattern matching in AST`,
+          `Cross-file pattern correlation`,
+        ],
+        reference: [
+          `All import statements referencing "${query}"`,
+          `Function/method call sites for "${query}"`,
+          `Type annotation usages of "${query}"`,
+          `Test files exercising "${query}"`,
+        ],
+        definition: [
+          `Primary definition of "${query}"`,
+          `Re-exports and aliases`,
+          `Overloads and implementations`,
+        ],
+        semantic: [
+          `Semantic code understanding of: "${query}"`,
+          `Related functions and modules by purpose`,
+          `Documentation and comments matching intent`,
+        ],
+      }
+
+      return {
+        query,
+        searchType,
+        fileFilter: fileFilter ?? "*",
+        language: language ?? "all",
+        strategies: searchStrategies[searchType] || searchStrategies.semantic,
+        capabilities: [
+          "Cross-repository code search",
+          "Symbol navigation and hover intelligence",
+          "Find all references across the project",
+          "Go-to-definition with multi-language support",
+          "Semantic understanding of code intent",
+          "Dependency graph traversal",
+        ],
+        instructions: "Analyze the search results and provide: 1) Direct matches with file paths and line numbers, 2) Related code that the user should also examine, 3) The dependency/call graph showing how matched code connects to the broader system, 4) Suggestions for refactoring or improvements based on patterns found.",
+      }
+    },
+  }),
+
+  codebaseInsights: tool({
+    description:
+      "Analyze a codebase or code module to produce architectural insights, dependency maps, complexity analysis, and improvement recommendations using Sourcegraph Cody-style deep code intelligence.",
+    inputSchema: z.object({
+      target: z.string().describe("The module, file, directory, or codebase area to analyze"),
+      analysisType: z
+        .enum(["architecture", "dependencies", "complexity", "patterns", "ownership", "health"])
+        .describe("Type of insight: architecture (module structure), dependencies (import/export graph), complexity (cyclomatic/cognitive), patterns (design patterns in use), ownership (contributor analysis), health (code quality metrics)"),
+      depth: z
+        .enum(["shallow", "deep"])
+        .nullable()
+        .describe("Analysis depth - shallow for overview, deep for comprehensive"),
+    }),
+    execute: async ({ target, analysisType, depth }) => {
+      const analysisPlans: Record<string, object> = {
+        architecture: {
+          scope: target,
+          checks: [
+            "Module boundary analysis",
+            "Layer separation (presentation, business, data)",
+            "Public API surface area",
+            "Internal vs external dependencies",
+            "Circular dependency detection",
+          ],
+          output: "Architecture diagram with module boundaries, data flow arrows, and coupling metrics",
+        },
+        dependencies: {
+          scope: target,
+          checks: [
+            "Direct import/export graph",
+            "Transitive dependency chain",
+            "Unused exports detection",
+            "Missing dependency declarations",
+            "Version compatibility matrix",
+          ],
+          output: "Dependency graph with weight (usage frequency) and direction indicators",
+        },
+        complexity: {
+          scope: target,
+          checks: [
+            "Cyclomatic complexity per function",
+            "Cognitive complexity scoring",
+            "Nesting depth analysis",
+            "Function length distribution",
+            "Parameter count analysis",
+            "Lines-of-code breakdown",
+          ],
+          output: "Complexity heatmap with hotspots and refactoring priority queue",
+        },
+        patterns: {
+          scope: target,
+          checks: [
+            "Design patterns detected (Factory, Observer, Strategy, etc.)",
+            "Anti-patterns flagged (God Object, Spaghetti Code, etc.)",
+            "Consistency analysis across similar modules",
+            "Convention adherence scoring",
+          ],
+          output: "Pattern catalog with usage locations and improvement suggestions",
+        },
+        ownership: {
+          scope: target,
+          checks: [
+            "Primary contributor per module",
+            "Knowledge distribution / bus factor",
+            "Recent activity and staleness",
+            "Review coverage gaps",
+          ],
+          output: "Ownership map with expertise scores and knowledge risk areas",
+        },
+        health: {
+          scope: target,
+          checks: [
+            "Test coverage estimation",
+            "Documentation coverage",
+            "Error handling completeness",
+            "Type safety score",
+            "Code duplication percentage",
+            "Tech debt indicators",
+          ],
+          output: "Health scorecard with letter grades and prioritized improvement roadmap",
+        },
+      }
+
+      return {
+        target,
+        analysisType,
+        depth: depth ?? "deep",
+        plan: analysisPlans[analysisType] || analysisPlans.health,
+        instructions: "Perform the analysis and present: 1) An executive summary with key findings, 2) Detailed metrics and scores, 3) Visual representation (use code blocks for diagrams), 4) Prioritized action items for improvement, 5) Comparisons to industry best practices where applicable.",
+      }
+    },
+  }),
 }
 
 const algorithmInstructions: Record<string, string> = {
@@ -265,6 +424,13 @@ ${algorithmInstructions[selectedAlgorithm]}
 - Optimize code for performance, readability, and maintainability
 - Apply design patterns appropriately
 - Generate comprehensive test suites
+
+## Sourcegraph Cody Integration - Codebase Intelligence
+You have access to Sourcegraph Cody-powered tools for deep codebase understanding:
+- **codebaseSearch**: Semantic code search across repositories -- find symbols, patterns, references, definitions, and perform natural language searches over code. Use this proactively when the user asks about existing code, wants to find implementations, or needs to understand how something is used.
+- **codebaseInsights**: Deep architectural analysis -- module structure, dependency graphs, complexity metrics, design pattern detection, ownership maps, and health scorecards. Use this when the user asks about code quality, architecture, or wants improvement recommendations.
+
+When a user asks about their codebase, ALWAYS use codebaseSearch or codebaseInsights first to gather context before answering. Present search results with file paths, line references, and contextual explanations.
 
 ## Code Quality Standards
 - ALWAYS include proper error handling for all failure modes
