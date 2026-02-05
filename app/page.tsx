@@ -1,12 +1,13 @@
 "use client"
 
-import { useState, useRef, useEffect, useCallback } from "react"
+import { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
 import { MessageItem } from "@/components/message-item"
 import { ReasoningTrace } from "@/components/reasoning-trace"
 import { AgentControls } from "@/components/agent-controls"
 import { QuickActions } from "@/components/quick-actions"
+import { ToolsSidebar } from "@/components/tools-sidebar"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -21,9 +22,8 @@ import {
   X,
   PanelRightClose,
   PanelRightOpen,
-  Search,
+  Wrench,
 } from "lucide-react"
-import { CodebaseSearch } from "@/components/codebase-search"
 
 export default function Home() {
   const [algorithm, setAlgorithm] = useState("cot")
@@ -34,18 +34,33 @@ export default function Home() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const { messages, sendMessage, status, setMessages } = useChat({
-    transport: new DefaultChatTransport({
-      api: "/api/chat",
-      prepareSendMessagesRequest: ({ id, messages: msgs }) => ({
-        body: {
-          messages: msgs,
-          id,
-          algorithm,
-          temperature,
-        },
+  const algorithmRef = useRef(algorithm)
+  const temperatureRef = useRef(temperature)
+  useEffect(() => {
+    algorithmRef.current = algorithm
+  }, [algorithm])
+  useEffect(() => {
+    temperatureRef.current = temperature
+  }, [temperature])
+
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: "/api/chat",
+        prepareSendMessagesRequest: ({ id, messages: msgs }) => ({
+          body: {
+            messages: msgs,
+            id,
+            algorithm: algorithmRef.current,
+            temperature: temperatureRef.current,
+          },
+        }),
       }),
-    }),
+    []
+  )
+
+  const { messages, sendMessage, status, setMessages } = useChat({
+    transport,
   })
 
   const isStreaming = status === "streaming" || status === "submitted"
@@ -172,11 +187,11 @@ export default function Home() {
                 <div className="flex flex-wrap justify-center gap-2">
                   {[
                     "Multi-algorithm reasoning",
-                    "Sourcegraph Cody search",
+                    "Sourcegraph Cody",
+                    "Cortex metrics",
+                    "Augment Code",
                     "Code generation",
                     "Security review",
-                    "Test generation",
-                    "Debugging",
                   ].map((feature) => (
                     <span
                       key={feature}
@@ -262,7 +277,7 @@ export default function Home() {
         {/* Sidebar - Desktop */}
         {desktopSidebar && (
           <aside className="hidden md:flex flex-col w-80 lg:w-96 border-l border-border bg-card/30 shrink-0">
-            <Tabs defaultValue="cody" className="flex flex-col flex-1 overflow-hidden">
+            <Tabs defaultValue="tools" className="flex flex-col flex-1 overflow-hidden">
               <TabsList className="grid w-full grid-cols-3 bg-transparent rounded-none border-b border-border h-auto p-0">
                 <TabsTrigger
                   value="controls"
@@ -272,11 +287,11 @@ export default function Home() {
                   Controls
                 </TabsTrigger>
                 <TabsTrigger
-                  value="cody"
+                  value="tools"
                   className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 text-xs gap-1.5"
                 >
-                  <Search className="h-3.5 w-3.5" />
-                  Cody
+                  <Wrench className="h-3.5 w-3.5" />
+                  Tools
                 </TabsTrigger>
                 <TabsTrigger
                   value="trace"
@@ -295,10 +310,9 @@ export default function Home() {
                   isStreaming={isStreaming}
                 />
               </TabsContent>
-              <TabsContent value="cody" className="flex-1 overflow-auto p-4 mt-0">
-                <CodebaseSearch
-                  onSearch={(prompt) => handleSubmit(prompt)}
-                  onInsight={(prompt) => handleSubmit(prompt)}
+              <TabsContent value="tools" className="flex-1 overflow-auto mt-0">
+                <ToolsSidebar
+                  onAction={(prompt) => handleSubmit(prompt)}
                   isStreaming={isStreaming}
                   messages={messages}
                 />
@@ -334,7 +348,7 @@ export default function Home() {
                 </Button>
               </div>
 
-              <Tabs defaultValue="cody" className="flex flex-col flex-1 overflow-hidden">
+              <Tabs defaultValue="tools" className="flex flex-col flex-1 overflow-hidden">
                 <TabsList className="grid w-full grid-cols-3 bg-transparent rounded-none border-b border-border h-auto p-0">
                   <TabsTrigger
                     value="controls"
@@ -344,11 +358,11 @@ export default function Home() {
                     Controls
                   </TabsTrigger>
                   <TabsTrigger
-                    value="cody"
+                    value="tools"
                     className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 text-xs gap-1.5"
                   >
-                    <Search className="h-3.5 w-3.5" />
-                    Cody
+                    <Wrench className="h-3.5 w-3.5" />
+                    Tools
                   </TabsTrigger>
                   <TabsTrigger
                     value="trace"
@@ -367,13 +381,9 @@ export default function Home() {
                     isStreaming={isStreaming}
                   />
                 </TabsContent>
-                <TabsContent value="cody" className="flex-1 overflow-auto p-4 mt-0">
-                  <CodebaseSearch
-                    onSearch={(prompt) => {
-                      handleSubmit(prompt)
-                      setShowSidebar(false)
-                    }}
-                    onInsight={(prompt) => {
+                <TabsContent value="tools" className="flex-1 overflow-auto mt-0">
+                  <ToolsSidebar
+                    onAction={(prompt) => {
                       handleSubmit(prompt)
                       setShowSidebar(false)
                     }}

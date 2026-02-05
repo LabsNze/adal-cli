@@ -119,6 +119,10 @@ const toolDisplayNames: Record<string, string> = {
   generateTests: "Generating Tests",
   codebaseSearch: "Cody: Searching Codebase",
   codebaseInsights: "Cody: Analyzing Codebase",
+  cortexMetrics: "Cortex: Fetching Metrics",
+  cortexAIImpact: "Cortex: Analyzing AI Impact",
+  augmentDebug: "Augment: Debugging",
+  augmentCodeInsight: "Augment: Code Insights",
 }
 
 interface MessageItemProps {

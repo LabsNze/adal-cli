@@ -46,6 +46,10 @@ const toolLabels: Record<string, string> = {
   generateTests: "Generate Tests",
   codebaseSearch: "Cody: Code Search",
   codebaseInsights: "Cody: Insights",
+  cortexMetrics: "Cortex: Metrics",
+  cortexAIImpact: "Cortex: AI Impact",
+  augmentDebug: "Augment: Debug",
+  augmentCodeInsight: "Augment: Insight",
 }
 
 export function ReasoningTrace({ messages, algorithm }: ReasoningTraceProps) {
