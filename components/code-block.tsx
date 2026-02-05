@@ -54,7 +54,6 @@ export function CodeBlock({ code, language }: CodeBlockProps) {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch {
-      // Fallback for older browsers
       const textarea = document.createElement("textarea")
       textarea.value = code
       textarea.style.position = "fixed"
@@ -71,17 +70,17 @@ export function CodeBlock({ code, language }: CodeBlockProps) {
   const displayLang = language ? languageLabels[language.toLowerCase()] || language : "Code"
 
   return (
-    <div className="relative group rounded-lg border border-border bg-secondary/50 overflow-hidden my-3">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-muted/30">
-        <div className="flex items-center gap-2">
-          <FileCode className="h-3.5 w-3.5 text-muted-foreground" />
-          <span className="text-xs font-mono text-muted-foreground">{displayLang}</span>
+    <div className="relative rounded-lg border border-border bg-secondary/50 overflow-hidden my-2">
+      <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/30">
+        <div className="flex items-center gap-1.5">
+          <FileCode className="h-3 w-3 text-muted-foreground" />
+          <span className="text-[11px] font-mono text-muted-foreground">{displayLang}</span>
         </div>
         <Button
           variant="ghost"
           size="sm"
           onClick={handleCopy}
-          className="h-7 gap-1.5 px-2 text-muted-foreground hover:text-foreground"
+          className="h-7 gap-1 px-2 text-muted-foreground hover:text-foreground min-h-[28px]"
         >
           {copied ? (
             <>
@@ -97,8 +96,8 @@ export function CodeBlock({ code, language }: CodeBlockProps) {
           <span className="sr-only">{copied ? "Copied to clipboard" : "Copy code"}</span>
         </Button>
       </div>
-      <div className="overflow-x-auto">
-        <pre className="p-4 text-sm leading-relaxed">
+      <div className="overflow-x-auto -webkit-overflow-scrolling-touch">
+        <pre className="p-3 text-[13px] leading-relaxed">
           <code className="font-mono text-foreground/90">{code}</code>
         </pre>
       </div>

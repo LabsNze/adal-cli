@@ -16,12 +16,18 @@ export const metadata: Metadata = {
   title: "AdaL Code Assistant - AI-Powered Autonomous Agent",
   description:
     "An autonomous AI agent and code assistant working together to generate solid, robust, production-ready code with advanced reasoning algorithms.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "AdaL",
+  },
 }
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  userScalable: false,
   themeColor: "#0a0b10",
 }
 
@@ -35,7 +41,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${jetbrainsMono.variable} dark bg-background`}
     >
-      <body className="font-sans antialiased">{children}</body>
+      <body className="font-sans antialiased overscroll-none">{children}</body>
     </html>
   )
 }
