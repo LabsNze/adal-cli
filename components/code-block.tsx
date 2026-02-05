@@ -1,46 +1,107 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { Check, Copy } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState, useCallback } from "react"
+import { Check, Copy, FileCode } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 interface CodeBlockProps {
-  code: string;
-  language?: string;
+  code: string
+  language?: string
+}
+
+const languageLabels: Record<string, string> = {
+  js: "JavaScript",
+  javascript: "JavaScript",
+  ts: "TypeScript",
+  typescript: "TypeScript",
+  tsx: "TSX",
+  jsx: "JSX",
+  py: "Python",
+  python: "Python",
+  rust: "Rust",
+  go: "Go",
+  java: "Java",
+  cpp: "C++",
+  c: "C",
+  cs: "C#",
+  csharp: "C#",
+  rb: "Ruby",
+  ruby: "Ruby",
+  php: "PHP",
+  swift: "Swift",
+  kotlin: "Kotlin",
+  sql: "SQL",
+  html: "HTML",
+  css: "CSS",
+  scss: "SCSS",
+  json: "JSON",
+  yaml: "YAML",
+  yml: "YAML",
+  bash: "Bash",
+  sh: "Shell",
+  shell: "Shell",
+  dockerfile: "Dockerfile",
+  graphql: "GraphQL",
+  plaintext: "Text",
 }
 
 export function CodeBlock({ code, language }: CodeBlockProps) {
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState(false)
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(code)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Fallback for older browsers
+      const textarea = document.createElement("textarea")
+      textarea.value = code
+      textarea.style.position = "fixed"
+      textarea.style.opacity = "0"
+      document.body.appendChild(textarea)
+      textarea.select()
+      document.execCommand("copy")
+      document.body.removeChild(textarea)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }, [code])
+
+  const displayLang = language ? languageLabels[language.toLowerCase()] || language : "Code"
 
   return (
-    <div className="relative group rounded-lg border border-border bg-card overflow-hidden my-3">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-muted/50">
-        <span className="text-xs font-mono text-muted-foreground">
-          {language || "code"}
-        </span>
+    <div className="relative group rounded-lg border border-border bg-secondary/50 overflow-hidden my-3">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-muted/30">
+        <div className="flex items-center gap-2">
+          <FileCode className="h-3.5 w-3.5 text-muted-foreground" />
+          <span className="text-xs font-mono text-muted-foreground">{displayLang}</span>
+        </div>
         <Button
           variant="ghost"
           size="sm"
           onClick={handleCopy}
-          className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+          className="h-7 gap-1.5 px-2 text-muted-foreground hover:text-foreground"
         >
           {copied ? (
-            <Check className="h-3.5 w-3.5" />
+            <>
+              <Check className="h-3 w-3 text-emerald-400" />
+              <span className="text-[10px] text-emerald-400">Copied</span>
+            </>
           ) : (
-            <Copy className="h-3.5 w-3.5" />
+            <>
+              <Copy className="h-3 w-3" />
+              <span className="text-[10px]">Copy</span>
+            </>
           )}
-          <span className="sr-only">Copy code</span>
+          <span className="sr-only">{copied ? "Copied to clipboard" : "Copy code"}</span>
         </Button>
       </div>
-      <pre className="overflow-x-auto p-4 text-sm leading-relaxed">
-        <code className="font-mono text-foreground">{code}</code>
-      </pre>
+      <div className="overflow-x-auto">
+        <pre className="p-4 text-sm leading-relaxed">
+          <code className="font-mono text-foreground/90">{code}</code>
+        </pre>
+      </div>
     </div>
-  );
+  )
 }

@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import {
   Select,
@@ -6,10 +6,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
+} from "@/components/ui/select"
+import { Slider } from "@/components/ui/slider"
+import { Label } from "@/components/ui/label"
+import { Separator } from "@/components/ui/separator"
 import {
   ArrowRight,
   GitBranch,
@@ -17,14 +17,18 @@ import {
   Zap,
   HelpCircle,
   Sparkles,
-} from "lucide-react";
+  Shield,
+  Code,
+  Bug,
+  FlaskConical,
+} from "lucide-react"
 
 interface AgentControlsProps {
-  algorithm: string;
-  setAlgorithm: (val: string) => void;
-  temperature: number;
-  setTemperature: (val: number) => void;
-  isStreaming: boolean;
+  algorithm: string
+  setAlgorithm: (val: string) => void
+  temperature: number
+  setTemperature: (val: number) => void
+  isStreaming: boolean
 }
 
 const algorithms = [
@@ -32,39 +36,45 @@ const algorithms = [
     value: "cot",
     label: "Chain-of-Thought",
     icon: ArrowRight,
-    desc: "Step-by-step linear reasoning",
+    desc: "Step-by-step linear reasoning for straightforward tasks",
+    best: "General coding, explanations",
   },
   {
     value: "tot",
     label: "Tree-of-Thought",
     icon: GitBranch,
-    desc: "Explore multiple solution branches",
+    desc: "Explores multiple solution branches and picks the best",
+    best: "Architecture, complex logic",
   },
   {
     value: "got",
     label: "Graph-of-Thought",
     icon: Brain,
-    desc: "Map concept relationships",
+    desc: "Maps concept relationships and dependency graphs",
+    best: "System design, refactoring",
   },
   {
     value: "react",
     label: "ReAct",
     icon: Zap,
-    desc: "Reason and act iteratively",
+    desc: "Iteratively reasons and acts, refining with each step",
+    best: "Debugging, iterative improvement",
   },
   {
     value: "selfask",
     label: "Self-Ask",
     icon: HelpCircle,
-    desc: "Decompose via sub-questions",
+    desc: "Decomposes problems via targeted sub-questions",
+    best: "Research, complex requirements",
   },
   {
     value: "custom",
     label: "Custom Hybrid",
     icon: Sparkles,
-    desc: "Best of all approaches",
+    desc: "Combines multiple strategies for maximum thoroughness",
+    best: "Complex multi-faceted tasks",
   },
-];
+]
 
 export function AgentControls({
   algorithm,
@@ -73,49 +83,52 @@ export function AgentControls({
   setTemperature,
   isStreaming,
 }: AgentControlsProps) {
-  const selectedAlgo = algorithms.find((a) => a.value === algorithm);
+  const selectedAlgo = algorithms.find((a) => a.value === algorithm)
 
   return (
-    <div className="space-y-5">
-      <div className="space-y-2">
-        <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+    <div className="space-y-6">
+      {/* Algorithm Selection */}
+      <div className="space-y-2.5">
+        <Label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
           Reasoning Algorithm
         </Label>
-        <Select
-          value={algorithm}
-          onValueChange={setAlgorithm}
-          disabled={isStreaming}
-        >
-          <SelectTrigger className="bg-card border-border">
+        <Select value={algorithm} onValueChange={setAlgorithm} disabled={isStreaming}>
+          <SelectTrigger className="bg-secondary/50 border-border h-10">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {algorithms.map((algo) => {
-              const Icon = algo.icon;
+              const AlgoIcon = algo.icon
               return (
                 <SelectItem key={algo.value} value={algo.value}>
                   <div className="flex items-center gap-2">
-                    <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                    <AlgoIcon className="h-3.5 w-3.5 text-muted-foreground" />
                     <span>{algo.label}</span>
                   </div>
                 </SelectItem>
-              );
+              )
             })}
           </SelectContent>
         </Select>
         {selectedAlgo && (
-          <p className="text-xs text-muted-foreground">{selectedAlgo.desc}</p>
+          <div className="space-y-1 rounded-lg bg-muted/20 border border-border/30 px-3 py-2.5">
+            <p className="text-xs text-foreground/70">{selectedAlgo.desc}</p>
+            <p className="text-[10px] text-muted-foreground">
+              Best for: <span className="text-foreground/60">{selectedAlgo.best}</span>
+            </p>
+          </div>
         )}
       </div>
 
-      <Separator className="bg-border/50" />
+      <Separator className="bg-border/30" />
 
+      {/* Temperature Slider */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          <Label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
             Temperature
           </Label>
-          <span className="text-xs font-mono text-foreground tabular-nums">
+          <span className="text-xs font-mono text-primary tabular-nums bg-primary/10 rounded px-1.5 py-0.5">
             {temperature.toFixed(1)}
           </span>
         </div>
@@ -129,58 +142,55 @@ export function AgentControls({
           className="py-1"
         />
         <div className="flex justify-between text-[10px] text-muted-foreground">
-          <span>Precise</span>
-          <span>Creative</span>
+          <span>Precise (0.0)</span>
+          <span>Balanced (0.5)</span>
+          <span>Creative (1.0)</span>
         </div>
       </div>
 
-      <Separator className="bg-border/50" />
+      <Separator className="bg-border/30" />
 
-      <div className="space-y-2">
-        <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+      {/* Agent Status */}
+      <div className="space-y-2.5">
+        <Label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
           Agent Status
         </Label>
-        <div className="flex items-center gap-2 text-sm">
+        <div className="flex items-center gap-2.5 rounded-lg bg-muted/20 border border-border/30 px-3 py-2.5">
           <div
-            className={`h-2 w-2 rounded-full ${
+            className={`h-2.5 w-2.5 rounded-full ${
               isStreaming ? "bg-amber-400 animate-pulse" : "bg-emerald-400"
             }`}
           />
-          <span className="text-foreground">
-            {isStreaming ? "Processing..." : "Ready"}
-          </span>
+          <span className="text-sm text-foreground">{isStreaming ? "Processing..." : "Ready"}</span>
         </div>
       </div>
 
-      <Separator className="bg-border/50" />
+      <Separator className="bg-border/30" />
 
-      <div className="space-y-2">
-        <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-          Capabilities
+      {/* Capabilities */}
+      <div className="space-y-2.5">
+        <Label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+          Agent Capabilities
         </Label>
-        <ul className="space-y-1.5 text-xs text-muted-foreground">
-          <li className="flex items-center gap-2">
-            <div className="h-1 w-1 rounded-full bg-emerald-400" />
-            Code generation and expansion
-          </li>
-          <li className="flex items-center gap-2">
-            <div className="h-1 w-1 rounded-full bg-emerald-400" />
-            Autonomous code review
-          </li>
-          <li className="flex items-center gap-2">
-            <div className="h-1 w-1 rounded-full bg-emerald-400" />
-            Multi-algorithm reasoning
-          </li>
-          <li className="flex items-center gap-2">
-            <div className="h-1 w-1 rounded-full bg-emerald-400" />
-            Real-time reasoning traces
-          </li>
-          <li className="flex items-center gap-2">
-            <div className="h-1 w-1 rounded-full bg-emerald-400" />
-            Interactive code assistance
-          </li>
-        </ul>
+        <div className="space-y-2">
+          {[
+            { icon: Code, label: "Code generation and expansion", color: "text-blue-400" },
+            { icon: Bug, label: "Debugging and error analysis", color: "text-red-400" },
+            { icon: Shield, label: "Security review and auditing", color: "text-emerald-400" },
+            { icon: Brain, label: "Multi-algorithm reasoning", color: "text-cyan-400" },
+            { icon: FlaskConical, label: "Test case generation", color: "text-amber-400" },
+            { icon: Sparkles, label: "Design pattern guidance", color: "text-pink-400" },
+          ].map((cap) => {
+            const CapIcon = cap.icon
+            return (
+              <div key={cap.label} className="flex items-center gap-2.5 text-xs text-foreground/70">
+                <CapIcon className={`h-3.5 w-3.5 ${cap.color}`} />
+                {cap.label}
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
-  );
+  )
 }
